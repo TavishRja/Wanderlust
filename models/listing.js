@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review =require("./review.js");
+const { required } = require("joi");
 
 
 const listingSchema = new Schema({
@@ -14,13 +15,14 @@ const listingSchema = new Schema({
     //     default:"https://unsplash.com/photos/photo-of-pine-trees-igX2deuD9lc",
     //     set:(v) => v=== ""? "https://unsplash.com/photos/photo-of-pine-trees-igX2deuD9lc" :v,
     image : { 
-    filename: String,
-    url: {
-        type: String,
-        default: "https://images.pexels.com/photos/17644421/pexels-photo-17644421/free-photo-of-seagulls-flying-on-sea-shore.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-        set : (v) => v === "" ? "https://images.pexels.com/photos/17644421/pexels-photo-17644421/free-photo-of-seagulls-flying-on-sea-shore.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1": v,
-    },
-  
+    // filename: String,
+    // url: {
+    //     type: String,
+    //     default: "https://images.pexels.com/photos/17644421/pexels-photo-17644421/free-photo-of-seagulls-flying-on-sea-shore.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    //     set : (v) => v === "" ? "https://images.pexels.com/photos/17644421/pexels-photo-17644421/free-photo-of-seagulls-flying-on-sea-shore.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1": v,
+    // },
+      url:String,
+      filename:String,
     },
     price : Number,
     location:String,
@@ -31,6 +33,21 @@ const listingSchema = new Schema({
             ref : "Review",
         },
     ],
+    owner :{
+        type: Schema.Types.ObjectId,
+        ref:"User",
+    },
+   geometry:{
+    type:{
+        type: String,
+        enum:['Point'],
+        required:true
+    },
+    coordinates: {
+        type:[Number],
+        required: true
+    },
+   },
 });
 
 listingSchema.post("findOneAndDelete", async(listing) =>{
