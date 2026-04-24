@@ -126,5 +126,42 @@ border: none !important;
 /* map */
 #map {
     height: 400px;
-    width: 80vh; 
+    width: 100%;
+    border-radius: 1rem;
+}
+
+.map-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.review-stars {
+    display: inline-flex;
+    gap: 0.35rem;
+    border: none;
+    padding: 0;
+}
+
+.review-star-btn {
+    border: none;
+    background: transparent;
+    font-size: 2rem;
+    line-height: 1;
+    color: #cfd4da;
+    cursor: pointer;
+    transition: color 0.15s ease-in-out;
+    padding: 0;
+}
+
+.review-star-btn:hover,
+.review-star-btn.is-active {
+    color: #f4b400;
+}
+
+.review-star-btn:focus-visible {
+    outline: 2px solid #212529;
+    outline-offset: 4px;
 }

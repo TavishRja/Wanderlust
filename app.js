@@ -2,8 +2,6 @@ if(process.env.NODE_ENV !="production"){
    require("dotenv").config();
 };
 
-console.log(process.env.SECRET);
-
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -27,15 +25,10 @@ const userRouter = require("./routes/user.js");
 
 const dbUrl = process.env.ATLASDB_URL;
 
-main()
-  .then(() => {
-    console.log("connected to DB");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
 async function main() {
+  if (!dbUrl || !/^mongodb(\+srv)?:\/\/.+/i.test(dbUrl)) {
+    throw new Error("Invalid or missing ATLASDB_URL in .env");
+  }
   await mongoose.connect(dbUrl);
 }
 
@@ -50,18 +43,18 @@ app.use(express.static(path.join(__dirname, "/public")));
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto:{
-    secret:process.env.SECRET,
+    secret:process.env.SECRET || "wanderlustsecret",
   },
   touchAfter: 24 * 3600,
 });
 
-store.on("error", () =>{
-  console.log("ERROR in MONGO SESSION STORE".err);
+store.on("error", (err) =>{
+  console.log("ERROR in MONGO SESSION STORE", err);
 });
 
 const sessionOptions = {
   store,
-  secret : process.env.SECRET,
+  secret : process.env.SECRET || "wanderlustsecret",
   resave : false,
   saveUninitialized : true,
   cookie: {
@@ -95,14 +88,7 @@ app.use((req,res,next) =>{
   next();
 });
 
-// app.get("/demouser",async(req,res) =>{
-//   let fakeUser = new User({
-//     email : "student@gmail.com",
-//     username : "delta-student",
-//   });
-//     let registeredUser = await User.register(fakeUser,"helloworld");
-//     res.send(registeredUser);
-// });
+
 
 
 app.use("/listings", listingRouter);
@@ -110,7 +96,7 @@ app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);
 
 
-app.all("*", (res, req, next) => {
+app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page Not found!"));
 });
 
@@ -121,8 +107,18 @@ app.use((err, req, res, next) => {
 });
 
 
-app.listen(8080, () => {
-  console.log("server is listening to port 8080");
-});
+const port = process.env.PORT || 3000;
+
+main()
+  .then(() => {
+    console.log("connected to DB");
+    app.listen(port, () => {
+      console.log(`server is listening to port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error("MongoDB connection failed:", err.message);
+    process.exit(1);
+  });
 
 

@@ -1,10 +1,5 @@
 <% layout("/layouts/boilerplate") %>
 
-<script>
-  const mapToken = "<%= process.env.MAP_TOKEN %>";
-  const listingData = "<%- JSON.stringify(listing) %>";
-</script>
-
 <div class="row mt-3">
   <div class="col-8 offset-3">
     <h3><%= listing.title %></h3>
@@ -77,19 +72,16 @@
     >
       <div class="mb-3 mt-3">
         <label class="form-label">Rating</label>
-        <fieldset class="starability-slot">
-          <input type="radio" class="input-no-rate" name="review[rating]" value="1" checked />
-          <input type="radio" name="review[rating]" value="1" />
-          <label>1 star</label>
-          <input type="radio" name="review[rating]" value="2" />
-          <label>2 stars</label>
-          <input type="radio" name="review[rating]" value="3" />
-          <label>3 stars</label>
-          <input type="radio" name="review[rating]" value="4" />
-          <label>4 stars</label>
-          <input type="radio" name="review[rating]" value="5" />
-          <label>5 stars</label>
+        <input type="hidden" name="review[rating]" id="review-rating" required />
+        <fieldset class="review-stars" data-rating-input="#review-rating">
+          <button type="button" class="review-star-btn" data-value="1" aria-label="1 star" title="1 star">&#9733;</button>
+          <button type="button" class="review-star-btn" data-value="2" aria-label="2 stars" title="2 stars">&#9733;</button>
+          <button type="button" class="review-star-btn" data-value="3" aria-label="3 stars" title="3 stars">&#9733;</button>
+          <button type="button" class="review-star-btn" data-value="4" aria-label="4 stars" title="4 stars">&#9733;</button>
+          <button type="button" class="review-star-btn" data-value="5" aria-label="5 stars" title="5 stars">&#9733;</button>
         </fieldset>
+        <div class="form-text">Choose a rating before submitting your review.</div>
+        <div class="invalid-feedback">Please choose a rating.</div>
       </div>
 
       <div class="mb-3 mt-3">
@@ -148,7 +140,12 @@
 
 <div class="col-6 offset-3 mb-3">
   <h3>Where you'll be</h3>
-  <div id="map"></div>
+  <div
+    id="map"
+    data-map-token="<%= mapToken || '' %>"
+    data-title="<%= listing.title %>"
+    data-coordinates="<%= listing.geometry && Array.isArray(listing.geometry.coordinates) ? listing.geometry.coordinates.join(',') : '' %>"
+  ></div>
 </div>
 
 <script src="/js/map.js"></script>
